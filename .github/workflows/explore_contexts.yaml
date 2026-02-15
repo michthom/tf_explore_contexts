@@ -47,4 +47,4 @@ jobs:
     if: github.ref_name == 'main' || github.base_ref == 'main'
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
-      environment: stg
+      environment: stggit checkp
