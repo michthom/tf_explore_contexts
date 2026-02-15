@@ -41,22 +41,28 @@ jobs:
     if: github.ref_type == 'branch' && github.ref_name == 'dev'
     environment: dev
     runs-on: ubuntu-latest
-    uses: ./.github/workflows/reusable_context_explorer.yaml
-    with:
-      environment: dev
+    steps:
+      - name: Explore contexts (dev)
+        uses: ./.github/workflows/reusable_context_explorer.yaml
+        with:
+          environment: dev
 
   stg-job:
     if: github.ref_type == 'branch' && github.ref_name == 'main'
     environment: stg
     runs-on: ubuntu-latest
-    uses: ./.github/workflows/reusable_context_explorer.yaml
-    with:
-      environment: stg
+    steps:
+      - name: Explore contexts (stg)
+        uses: ./.github/workflows/reusable_context_explorer.yaml
+        with:
+          environment: stg
 
   prd-job:
     if: github.ref_type == 'tag' && github.ref_name == 'v_*'
     environment: prd
     runs-on: ubuntu-latest
-    uses: ./.github/workflows/reusable_context_explorer.yaml
-    with:
-      environment: prd
+    steps:
+      - name: Explore contexts (prd)
+        uses: ./.github/workflows/reusable_context_explorer.yaml
+        with:
+          environment: prd
