@@ -109,3 +109,10 @@ jobs:
         run: |-
           echo -e "\n\n==================== SECRETS CONTEXT ====================\n\n"
           echo "$SECRETS_CONTEXT"
+          
+      - name: Write vars context to log
+        env:
+          VARS_CONTEXT: ${{ toJSON(vars) }}
+        run: |-
+          echo -e "\n\n==================== VARS CONTEXT ====================\n\n"
+          echo "$VARS_CONTEXT"
