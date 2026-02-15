@@ -38,16 +38,13 @@ permissions:
 
 jobs:
   dev-job:
-    if: github.ref_type == 'branch' && github.ref_name == 'dev'
     environment: dev
     uses: ./.github/workflows/reusable_context_explorer.yaml
 
   stg-job:
-    if: github.ref_type == 'branch' && github.ref_name == 'main'
     environment: stg
     uses: ./.github/workflows/reusable_context_explorer.yaml
 
   prd-job:
-    if: github.ref_type == 'tag' && github.ref_name == 'v_*'
     environment: prd
     uses: ./.github/workflows/reusable_context_explorer.yaml
