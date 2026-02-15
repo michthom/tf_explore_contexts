@@ -37,82 +37,26 @@ permissions:
   pull-requests: read
 
 jobs:
-  explore:
+  dev-job:
+    if: github.ref_type == 'branch' && github.ref_name == 'dev'
+    environment: dev
     runs-on: ubuntu-latest
-    steps:
-      - name: Summarise event that triggered the workflow
-        run: |-
-          echo -e "\n\n==================== EVENT SUMMARY ====================\n\n"
-          echo "Event name: ${{ github.event_name }}"
-          echo "Git ref name: ${{ github.ref_name }}"
-          echo "Git ref type: ${{ github.ref_type }}"
-          echo "Event type: ${{ github.event.pull_request == 'pull_request' &&  'pull_request' || 'other' }}"
+    uses: ./.github/workflows/reusable_context_explorer.yaml
+    with:
+      environment: dev
 
-      - name: Write GitHub context to log
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: |-
-          echo -e "\n\n==================== GITHUB CONTEXT ====================\n\n"
-          echo "$GITHUB_CONTEXT"
+  stg-job:
+    if: github.ref_type == 'branch' && github.ref_name == 'main'
+    environment: stg
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable_context_explorer.yaml
+    with:
+      environment: stg
 
-      - name: Write job context to log
-        env:
-          JOB_CONTEXT: ${{ toJSON(job) }}
-        run: |-
-          echo -e "\n\n==================== JOB CONTEXT ====================\n\n"
-          echo "$JOB_CONTEXT"
-
-      # this errors out if you try to access it w/o using a reusable workflow
-      # - name: Write jobs context to log (reusable workflows)
-      #   env:
-      #     JOB_CONTEXT: ${{ toJSON(jobs) }}
-      #   run: echo "$JOBS_CONTEXT"
-
-      - name: Write steps context to log
-        env:
-          STEPS_CONTEXT: ${{ toJSON(steps) }}
-        run: |-
-          echo -e "\n\n==================== STEPS CONTEXT ====================\n\n"
-          echo "$STEPS_CONTEXT"
-
-      - name: Write runner context to log
-        env:
-          RUNNER_CONTEXT: ${{ toJSON(runner) }}
-        run: |-
-          echo -e "\n\n==================== RUNNER CONTEXT ====================\n\n"
-          echo "$RUNNER_CONTEXT"
-          
-      - name: Write strategy context to log
-        env:
-          STRATEGY_CONTEXT: ${{ toJSON(strategy) }}
-        run: |-
-          echo -e "\n\n==================== STRATEGY CONTEXT ====================\n\n"
-          echo "$STRATEGY_CONTEXT"
-
-      - name: Write matrix context to log
-        env:
-          MATRIX_CONTEXT: ${{ toJSON(matrix) }}
-        run: |-
-          echo -e "\n\n==================== MATRIX CONTEXT ====================\n\n"
-          echo "$MATRIX_CONTEXT"
-          
-      - name: Write env context to log
-        env:
-          ENV_CONTEXT: ${{ toJSON(env) }}
-        run: |-
-          echo -e "\n\n==================== ENV CONTEXT ====================\n\n"
-          echo "$ENV_CONTEXT"
-          
-      - name: Write secrets context to log
-        env:
-          SECRETS_CONTEXT: ${{ toJSON(secrets) }}
-        run: |-
-          echo -e "\n\n==================== SECRETS CONTEXT ====================\n\n"
-          echo "$SECRETS_CONTEXT"
-          
-      - name: Write vars context to log
-        env:
-          VARS_CONTEXT: ${{ toJSON(vars) }}
-        run: |-
-          echo -e "\n\n==================== VARS CONTEXT ====================\n\n"
-          echo "$VARS_CONTEXT"
+  prd-job:
+    if: github.ref_type == 'tag' && github.ref_name == 'v_*'
+    environment: prd
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable_context_explorer.yaml
+    with:
+      environment: prd
