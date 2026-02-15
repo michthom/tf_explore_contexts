@@ -38,7 +38,6 @@ permissions:
 
 jobs:
   kickoff-job:
-    if: github.ref_name == 'dev' || github.base_ref == 'dev'
     environment: dev
     runs-on: ubuntu-latest
     steps:
