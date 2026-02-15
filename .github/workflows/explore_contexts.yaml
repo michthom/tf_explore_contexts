@@ -38,13 +38,4 @@ permissions:
 
 jobs:
   dev-job:
-    environment: dev
-    uses: ./.github/workflows/reusable_context_explorer.yaml
-
-  stg-job:
-    environment: stg
-    uses: ./.github/workflows/reusable_context_explorer.yaml
-
-  prd-job:
-    environment: prd
     uses: ./.github/workflows/reusable_context_explorer.yaml
