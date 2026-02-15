@@ -1,11 +1,12 @@
 name: Explore Contexts
 on:
   push:
-    branches: [main]
+    branches: [dev, main]
 
   pull_request:
     types: [opened, synchronize, reopened, edited, closed]
     branches:
+      - dev
       - main
 
   workflow_dispatch:
