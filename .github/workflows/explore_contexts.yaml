@@ -38,4 +38,13 @@ permissions:
 
 jobs:
   dev-job:
+    if: github.ref_name == 'dev' || github.base_ref == 'dev'
     uses: ./.github/workflows/reusable_context_explorer.yaml
+    with:
+      environment: dev
+
+  stg-job:
+    if: github.ref_name == 'main' || github.base_ref == 'main'
+    uses: ./.github/workflows/reusable_context_explorer.yaml
+    with:
+      environment: stggit checkp
