@@ -39,39 +39,12 @@ permissions:
 jobs:
   dev-job:
     if: github.ref_type == 'branch' && github.ref_name == 'dev'
-    environment: dev
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Explore contexts (dev)
-        uses: ./.github/workflows/reusable_context_explorer.yaml
-        with:
-          environment: dev
+    uses: ./.github/workflows/reusable_context_explorer.yaml
 
   stg-job:
     if: github.ref_type == 'branch' && github.ref_name == 'main'
-    environment: stg
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Explore contexts (stg)
-        uses: ./.github/workflows/reusable_context_explorer.yaml
-        with:
-          environment: stg
+    uses: ./.github/workflows/reusable_context_explorer.yaml
 
   prd-job:
     if: github.ref_type == 'tag' && github.ref_name == 'v_*'
-    environment: prd
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Explore contexts (prd)
-        uses: ./.github/workflows/reusable_context_explorer.yaml
-        with:
-          environment: prd
+    uses: ./.github/workflows/reusable_context_explorer.yaml
