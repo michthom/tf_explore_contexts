@@ -37,7 +37,8 @@ permissions:
   pull-requests: read
 
 jobs:
-  kickoff-job:
+  kickoff-dev-job:
+    if: github.ref_name == 'dev' || github.base_ref == 'dev'
     environment: dev
     runs-on: ubuntu-latest
     steps:
@@ -53,6 +54,18 @@ jobs:
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
       environment: dev
+
+  kickoff-stg-job:
+    if: github.ref_name == 'main' || github.base_ref == 'main'
+    environment: stg
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write vars context to log
+        env:
+          VARS_CONTEXT: ${{ toJSON(vars) }}
+        run: |-
+          echo -e "\n\n==================== VARS CONTEXT ====================\n\n"
+          echo "$VARS_CONTEXT"
 
   stg-job:
     if: github.ref_name == 'main' || github.base_ref == 'main'
