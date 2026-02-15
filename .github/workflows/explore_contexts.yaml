@@ -44,7 +44,7 @@ jobs:
           echo -e "\n\n==================== EVENT SUMMARY ====================\n\n"
           echo "Event name: ${{ github.event_name }}"
           echo "Event action: ${{ github.event.action }}"
-          echo "Event type: ${{ github.event.pull_request ? 'pull_request' : 'other' }}"
+          echo "Event type: ${{ github.event.pull_request == 'pull_request' &&  'pull_request' || 'other' }}"
 
       - name: Write GitHub context to log
         env:
