@@ -6,7 +6,7 @@ on:
       environment:
         required: true
         type: string
-      action:
+      terraform_action:
         required: true
         type: string
 
@@ -152,8 +152,8 @@ jobs:
 
           PARSED_JSON=${{ fromJSON( env.CONFIG_LAYERS_JSON ) }}
 
-          if action=$(echo "${{ github.event.inputs.action }}" | tr '[:upper:]' '[:lower:]'); then
-            case "$action" in
+          if terraform_action=$(echo "${{ github.event.inputs.terraform_action }}" | tr '[:upper:]' '[:lower:]'); then
+            case "$terraform_action" in
               "plan"|"apply")
                 SORTED_LAYERS=$(jq --raw-output '.configuration_layers[]' <<< $PARSED_JSON | sort)
                 ;;
@@ -162,12 +162,12 @@ jobs:
                 SORTED_LAYERS=$(jq --raw-output '.configuration_layers[]' <<< $PARSED_JSON | sort -r)
                 ;;
               *)
-                echo "Invalid action: $action"
+                echo "Invalid terraform_action: $terraform_action"
                 exit 1
                 ;;
             esac
           else
-            echo "Failed to read action input"
+            echo "Failed to read terraform_action input"
             exit 1
           fi
 
@@ -188,7 +188,7 @@ jobs:
               -reconfigure
 
             # Terraform plan / apply / destroy
-            case "$ACTION" in
+            case "$terraform_action" in
               "plan")
                 echo -e "\n\n============================================================="
                 echo "Terraform PLAN in config layer: $config_layer"
@@ -217,7 +217,7 @@ jobs:
                   -var-file=../../global.tfvars
                 ;;
               *)
-                echo "Invalid action: $ACTION"
+                echo "Invalid action: $terraform_action"
                 exit 1
                 ;;
             esac
