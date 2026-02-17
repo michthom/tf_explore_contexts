@@ -1,7 +1,17 @@
 name: Explore Contexts
 on:
-  push:
-    branches: [dev, main]
+  # Pull request targeting dev (dev environment) or main branch (stg environment)
+  #   [opened, synchronize, reopened, edited]
+        # github.event_name == "pull_request" &&
+        # github.base_ref == "dev" || github.base_ref == "main" &&
+        # github.event.pull_request.merged == false
+  #   Terraform plan only
+
+  #   [closed] and github.event.pull_request.merged == true
+        # github.event_name == "pull_request" &&
+        # github.base_ref == "dev" || github.base_ref == "main" &&
+        # github.event.pull_request.merged == true
+  #   Terraform apply (no plan, auto-approve)
 
   pull_request:
     types: [opened, synchronize, reopened, edited, closed]
@@ -9,9 +19,19 @@ on:
       - dev
       - main
 
+  # Release published / tagged on main branch (prd environment)
+  # Terraform plan, manual approval and apply for each configuration layer
+        # github.event_name == "release" &&
+        # github.event.action == "published" &&
+        # github.base_ref == "main" &&
+        # github.ref_type == "tag" &&
+        # startsWith(github.ref_name, 'v_')
+
   release:
     types: [published]
 
+  # Manual trigger with workflow_dispatch for any environment and action
+  # Require human confirmation for apply or destroy actions?
   workflow_dispatch:
     inputs:
       environment:
@@ -35,10 +55,15 @@ on:
         default: plan
 
 permissions:
-  contents: read
-  id-token: write
+  # pull-requests: read permits an action to list pull requests, required to act on PR events and to check the base branch of a PR
   pull-requests: read
-
+  # contents: read permits an action to list the commits, required to check the commit messages of a PR or a release, and to check the files changed in a PR
+  # This might not be needed in the context of this demo, but it's a common permission for Terraform workflows to check if the changes are only in specific paths (e.g., in a specific folder) to decide if the workflow should run or not  
+  contents: read
+  # Fetch an OpenID Connect (OIDC) token. This requires id-token: write. For more information,
+  # see OpenID Connect: https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#updating-your-actions-for-oidc
+  id-token: write
+ 
 jobs:
   summary:
     environment: prd
@@ -46,16 +71,21 @@ jobs:
     steps:
       - name: Write summary of the github context to log
         run: |-
-          echo -e "\n\n==================== GITHUB CONTEXT ====================\n\n"
-          echo "Event Name: ${{ github.event_name }}"
-          echo "Ref: ${{ github.ref }}"
-          echo "Ref starts with: ${{ startsWith(github.ref, 'refs/tags/v_') }}"
-          echo "Ref Type: ${{ github.ref_type }}"
-        
+          echo -e "\n\n================ GITHUB CONTEXT SUMMARY ================\n\n"
+          echo "          Event Name: ${{ github.event_name }}"
+          echo "            Ref Type: ${{ github.ref_type }}"
+          echo "                 Ref: ${{ github.ref }}"
+          echo "     Ref starts with: ${{ startsWith(github.ref, 'refs/tags/v_') }}"
+          echo "            Ref_name: ${{ github.ref_name }}"
+          echo "Ref_name starts with: ${{ startsWith(github.ref_name, 'v_') }}"
+
   kickoff-dev-job:
-    if: github.ref_name == 'dev' || github.base_ref == 'dev'
+    if: |
+      github.ref_name == 'dev' ||
+      github.base_ref == 'dev'
     environment: dev
     runs-on: ubuntu-latest
+    concurrency: dev-group
     steps:
       - name: Write vars context to log
         env:
@@ -66,6 +96,7 @@ jobs:
 
   dev-job:
     if: github.ref_name == 'dev' || github.base_ref == 'dev'
+    concurrency: dev-group
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
       environment: dev
@@ -74,6 +105,7 @@ jobs:
     if: github.ref_name == 'main' || github.base_ref == 'main'
     environment: stg
     runs-on: ubuntu-latest
+    concurrency: stg-group
     steps:
       - name: Write vars context to log
         env:
@@ -84,14 +116,16 @@ jobs:
 
   stg-job:
     if: github.ref_name == 'main' || github.base_ref == 'main'
+    concurrency: stg-group
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
       environment: stg
 
-  kickoff-release-job:
+  kickoff-prd-job:
     if: github.event_name == 'release' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v_')
     environment: prd
     runs-on: ubuntu-latest
+    concurrency: prd-group
     steps:
       - name: Write vars context to log
         env:
@@ -102,6 +136,7 @@ jobs:
 
   prd-job:
     if: github.event_name == 'release' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v_')
+    concurrency: prd-group
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
       environment: prd
