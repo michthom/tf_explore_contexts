@@ -9,8 +9,8 @@ on:
       - dev
       - main
 
-  create:
-    # New tag or branch is created
+  release:
+    types: [published]
 
   workflow_dispatch:
     inputs:
@@ -76,8 +76,8 @@ jobs:
     with:
       environment: stg
 
-  kickoff-tag-job:
-    if: startsWith(github.ref, 'refs/tags/')
+  kickoff-release-job:
+    if: startsWith(github.ref, 'refs/tags/v_*')
     environment: prd
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +89,7 @@ jobs:
           echo "$VARS_CONTEXT"
 
   prd-job:
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v_*')
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
       environment: prd
