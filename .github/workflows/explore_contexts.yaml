@@ -41,7 +41,7 @@ permissions:
 
 jobs:
   summary:
-    environment: summary
+    environment: prd
     runs-on: ubuntu-latest
     steps:
       - name: Write summary of the github context to log
