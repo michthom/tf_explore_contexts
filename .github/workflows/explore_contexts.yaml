@@ -92,7 +92,7 @@ jobs:
       environment: stg
 
   kickoff-release-job:
-    if: startsWith(github.ref, 'refs/tags/v_*')
+    if: github.event_name == 'release' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v_')
     environment: prd
     runs-on: ubuntu-latest
     steps:
@@ -104,7 +104,7 @@ jobs:
           echo "$VARS_CONTEXT"
 
   prd-job:
-    if: startsWith(github.ref, 'refs/tags/v_*')
+    if: github.event_name == 'release' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v_')
     uses: ./.github/workflows/reusable_context_explorer.yaml
     with:
       environment: prd
