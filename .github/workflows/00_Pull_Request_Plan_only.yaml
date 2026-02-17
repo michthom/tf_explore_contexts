@@ -57,7 +57,7 @@ jobs:
             }}
 
   plan_only:
-    uses: ./.github/workflows/Reusable_Terraform_Operation.yaml
+    uses: ./.github/workflows/Reusable_Terraform_Operations.yaml
     with:
         environment: |-
             ${{
