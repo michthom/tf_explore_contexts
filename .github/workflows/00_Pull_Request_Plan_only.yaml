@@ -48,7 +48,7 @@ permissions:
 
 jobs:
   capture_job_context:
-    uses: ./.github/workflows/Reusable_capture_context.yaml
+    uses: ./.github/workflows/Reusable_Capture_Context.yaml
     with:
         environment: |-
             ${{
@@ -57,7 +57,7 @@ jobs:
             }}
 
   plan_only:
-    uses: ./.github/workflows/Reusable_terraform_operation.yaml
+    uses: ./.github/workflows/Reusable_Terraform_Operation.yaml
     with:
         environment: |-
             ${{
